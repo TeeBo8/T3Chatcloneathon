@@ -2,26 +2,22 @@ import {
   timestamp,
   pgTable,
   text,
-  serial,
+  varchar,
 } from "drizzle-orm/pg-core"
 
 // Table pour stocker les conversations de chat
-export const chats = pgTable("chat", {
-  id: serial("id").primaryKey(),
-  userId: text("userId").notNull(), // L'ID utilisateur de Clerk
+export const chats = pgTable("chats", {
+  id: text("id").primaryKey(),
+  userId: varchar("user_id", { length: 256 }).notNull(), // To store the Clerk user ID
   title: text("title").notNull(),
-  messages: text("messages").notNull(), // JSON stringifié des messages
-  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
-  updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 })
 
 // Table pour stocker les messages individuels si on veut une structure plus normalisée
-export const messages = pgTable("message", {
-  id: serial("id").primaryKey(),
-  chatId: serial("chatId")
-    .notNull()
-    .references(() => chats.id, { onDelete: "cascade" }),
-  role: text("role").notNull(), // "user" ou "assistant"
+export const messages = pgTable("messages", {
+  id: text("id").primaryKey(),
+  chatId: text("chat_id").notNull().references(() => chats.id, { onDelete: "cascade" }),
+  role: text("role", { enum: ["user", "assistant"] }).notNull(),
   content: text("content").notNull(),
-  createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 }) 

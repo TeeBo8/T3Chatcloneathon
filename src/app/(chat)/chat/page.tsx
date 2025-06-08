@@ -1,13 +1,19 @@
 "use client";
 
 import { useChat } from "ai/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function ChatPage() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const router = useRouter();
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    onFinish: () => {
+      router.refresh();
+    },
+  });
 
   return (
     <div className="flex flex-col h-full">
@@ -25,12 +31,12 @@ export default function ChatPage() {
                   <p className="font-bold">
                     {m.role === "user" ? "You" : "AI"}
                   </p>
-                  <p className="text-foreground/90">{m.content}</p>
+                  <p className="text-foreground/90 whitespace-pre-wrap">{m.content}</p>
                 </div>
               </div>
             ))
           ) : (
-            <div className="flex justify-center items-center h-full">
+            <div className="flex justify-center items-center h-[calc(100vh-8rem)]">
               <p className="text-center text-gray-500">
                 Start a new conversation
               </p>
