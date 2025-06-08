@@ -3,34 +3,26 @@ import { ThemeToggle } from "@/components/custom/theme-toggle";
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { ChatHistory } from "@/components/custom/chat-history";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
-// Let's create placeholder components for now.
-// We'll build them out properly in the next step.
-const Sidebar = () => (
-    <aside className="w-64 shrink-0 bg-gray-100 dark:bg-gray-950 p-4 hidden md:flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-            <div className="text-lg font-bold">T3 Cloneathon</div>
-            <ThemeToggle />
-        </div>
-        
-        {/* Replace the placeholder div with our dynamic component */}
-        <div className="flex-1 overflow-y-auto">
-            <ChatHistory />
-        </div>
+const SidebarContent = () => (
+  <>
+    <div className="flex-1 overflow-y-auto">
+        <ChatHistory />
+    </div>
 
-        <div className="border-t border-primary/20 pt-4 flex items-center justify-center">
-            <SignedIn>
-                {/* Affiche le bouton de profil si l'utilisateur est connecté */}
-                <UserButton afterSignOutUrl="/" />
-            </SignedIn>
-            <SignedOut>
-                {/* Affiche le bouton de connexion si l'utilisateur n'est pas connecté */}
-                <SignInButton mode="modal">
-                    <Button>Login to Chat</Button>
-                </SignInButton>
-            </SignedOut>
-        </div>
-    </aside>
+    <div className="border-t border-primary/20 pt-4 flex items-center justify-center">
+        <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+        </SignedIn>
+        <SignedOut>
+            <SignInButton mode="modal">
+                <Button>Login to Chat</Button>
+            </SignInButton>
+        </SignedOut>
+    </div>
+  </>
 );
 
 export default function ChatLayout({
@@ -40,8 +32,35 @@ export default function ChatLayout({
 }) {
   return (
     <div className="flex h-screen w-screen">
-      <Sidebar />
-      <main className="flex-1 flex flex-col bg-white dark:bg-black">
+      {/* Desktop Sidebar */}
+      <aside className="w-72 shrink-0 bg-gray-100 dark:bg-gray-950 p-4 hidden md:flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+            <div className="text-lg font-bold">T3 Cloneathon</div>
+            <ThemeToggle />
+        </div>
+        <SidebarContent />
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col bg-background">
+        {/* Mobile Header */}
+        <header className="md:hidden flex items-center justify-between p-2 border-b">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 p-4 flex flex-col">
+              <SheetHeader className="mb-4">
+                <SheetTitle className="text-left">T3 Cloneathon</SheetTitle>
+              </SheetHeader>
+              <SidebarContent />
+            </SheetContent>
+          </Sheet>
+          <ThemeToggle />
+        </header>
+        
         {children}
       </main>
     </div>
