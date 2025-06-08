@@ -1,15 +1,26 @@
-// Simple placeholder API route for testing useChat hook
+import { createGroq } from '@ai-sdk/groq';
+import { streamText } from 'ai';
+
+// IMPORTANT! Set the runtime to edge
+export const runtime = 'edge';
+
+const groq = createGroq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-    const lastMessage = messages[messages.length - 1]?.content || "Hello!";
 
-    // Simple mock response
-    const responseText = `This is a mock AI response. You said: "${lastMessage}"`;
+    // Create a chat completion request to Groq with streaming
+    const result = streamText({
+      model: groq('llama3-8b-8192'), // Or 'mixtral-8x7b-32768'
+      messages,
+    });
 
-    return new Response(responseText);
+    return result.toDataStreamResponse();
   } catch (error) {
-    console.error('Chat API error:', error);
-    return new Response('Error processing request', { status: 500 });
+    console.error('Error in /api/chat:', error);
+    return new Response('An error occurred.', { status: 500 });
   }
 } 
