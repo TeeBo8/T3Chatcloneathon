@@ -18,14 +18,14 @@ export default function ChatPage() {
               <div key={m.id} className="flex items-start space-x-4">
                 <Avatar>
                   <AvatarFallback>
-                    {m.role === "user" ? "TU" : "AI"}
+                    {m.role === "user" ? "U" : "AI"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <p className="font-bold">
-                    {m.role === "user" ? "You" : "Assistant"}
+                    {m.role === "user" ? "You" : "AI"}
                   </p>
-                  <p className="text-white/80">{m.content}</p>
+                  <p className="text-foreground/90">{m.content}</p>
                 </div>
               </div>
             ))
