@@ -2,6 +2,7 @@ import React from "react";
 import { ThemeToggle } from "@/components/custom/theme-toggle";
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { ChatHistory } from "@/components/custom/chat-history";
 
 // Let's create placeholder components for now.
 // We'll build them out properly in the next step.
@@ -12,8 +13,10 @@ const Sidebar = () => (
             <ThemeToggle />
         </div>
         
-        {/* Placeholder for chat history */}
-        <div className="flex-1"></div>
+        {/* Replace the placeholder div with our dynamic component */}
+        <div className="flex-1 overflow-y-auto">
+            <ChatHistory />
+        </div>
 
         <div className="border-t border-primary/20 pt-4 flex items-center justify-center">
             <SignedIn>
