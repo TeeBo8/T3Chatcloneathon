@@ -1,5 +1,7 @@
 import React from "react";
-import { ThemeToggle } from "@/components/custom/theme-toggle"; // Import the toggle button
+import { ThemeToggle } from "@/components/custom/theme-toggle";
+import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 
 // Let's create placeholder components for now.
 // We'll build them out properly in the next step.
@@ -9,8 +11,22 @@ const Sidebar = () => (
             <div className="text-lg font-bold">T3 Cloneathon</div>
             <ThemeToggle />
         </div>
-        {/* Placeholder for New Chat button and chat history */}
+        
+        {/* Placeholder for chat history */}
         <div className="flex-1"></div>
+
+        <div className="border-t border-primary/20 pt-4 flex items-center justify-center">
+            <SignedIn>
+                {/* Affiche le bouton de profil si l'utilisateur est connecté */}
+                <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+            <SignedOut>
+                {/* Affiche le bouton de connexion si l'utilisateur n'est pas connecté */}
+                <SignInButton mode="modal">
+                    <Button>Login to Chat</Button>
+                </SignInButton>
+            </SignedOut>
+        </div>
     </aside>
 );
 
