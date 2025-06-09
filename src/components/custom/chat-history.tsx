@@ -3,9 +3,8 @@ import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
-import { Button } from "../ui/button";
-import { MessageSquare } from "lucide-react";
 import { DeleteChatButton } from "./delete-chat-button";
+import { NewChatButton } from "./new-chat-button";
 
 // This is a React Server Component
 export async function ChatHistory() {
@@ -22,12 +21,7 @@ export async function ChatHistory() {
 
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">
-      <Link href="/chat">
-        <Button variant="outline" className="w-full mb-4">
-          <MessageSquare className="mr-2 h-4 w-4" />
-          New Chat
-        </Button>
-      </Link>
+      <NewChatButton />
       <div className="flex-1 flex-col-reverse overflow-y-auto space-y-1">
         {userChats.map((chat) => (
           <div key={chat.id} className="group relative flex items-center">

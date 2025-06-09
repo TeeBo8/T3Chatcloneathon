@@ -46,19 +46,23 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
     <div className="flex flex-col h-full bg-background">
       <ScrollArea className="flex-1 p-4">
         {messages.length > 0 ? (
-          <div className="space-y-6">
+          <div className="space-y-4 max-w-4xl mx-auto">
             {messages.map((m) => (
-              <div key={m.id} className="flex items-start space-x-4">
-                <Avatar className="shrink-0">
-                  <AvatarFallback className="bg-muted text-muted-foreground">
-                    {m.role === "user" ? "U" : "AI"}
-                  </AvatarFallback>
+              <div
+                key={m.id}
+                className={`flex items-end gap-3 ${m.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+              >
+                <Avatar className={`h-10 w-10 shrink-0 ${m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                  <AvatarFallback className={m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}>{m.role === "user" ? "U" : "AI"}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground mb-2">
-                    {m.role === "user" ? "You" : "AI"}
-                  </p>
-                  <div className="prose dark:prose-invert max-w-none break-words prose-p:text-foreground prose-strong:text-foreground prose-li:text-foreground prose-h1:text-foreground prose-h2:text-foreground prose-h3:text-foreground">
+                <div
+                  className={`max-w-[80%] rounded-3xl px-4 py-3 shadow-sm ${
+                    m.role === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted/70 backdrop-blur-sm border border-border/50'
+                  }`}
+                >
+                  <div className="prose dark:prose-invert prose-p:my-0 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 max-w-none break-words">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
@@ -73,7 +77,11 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
                               value={codeString}
                             />
                           ) : (
-                            <code className="bg-muted text-muted-foreground px-1.5 py-0.5 rounded-sm font-mono text-sm" {...props}>
+                            <code className={`px-1.5 py-0.5 rounded-md font-mono text-sm ${
+                              m.role === 'user' 
+                                ? 'bg-primary-foreground/20 text-primary-foreground' 
+                                : 'bg-primary/20 text-primary'
+                            }`} {...props}>
                               {children}
                             </code>
                           );
@@ -109,8 +117,8 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
         )}
       </ScrollArea>
 
-      <div className="p-4">
-        <div className="mx-auto max-w-2xl">
+      <div className="p-6 bg-background/95 backdrop-blur-sm border-t border-border/50">
+        <div className="mx-auto max-w-4xl">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -124,13 +132,13 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
               });
             }}
           >
-            <div className="flex items-end gap-2">
-              <div className="relative flex-1 flex h-full min-h-[70px] flex-col items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="flex items-end gap-3">
+              <div className="relative flex-1 flex h-full min-h-[60px] flex-col items-center justify-center rounded-3xl border border-border/50 bg-muted/30 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
                 <Textarea
                   value={input}
                   onChange={handleInputChange}
-                  placeholder={`Message ${model === 'gemini' ? 'Gemini...' : 'Groq...'}`}
-                  className="w-full resize-none self-center bg-transparent px-4 py-4 focus-within:outline-none"
+                  placeholder={`Type your message to ${model === 'gemini' ? 'Gemini' : 'Groq'}...`}
+                  className="w-full resize-none self-center bg-transparent px-5 py-4 focus-within:outline-none placeholder:text-muted-foreground/70"
                   maxRows={5}
                   rows={1}
                   disabled={isLoading}
@@ -147,10 +155,15 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
                   }}
                 />
               </div>
-              <div className="flex items-center gap-2 pb-2">
+              <div className="flex items-center gap-2 pb-1">
                 <ModelSelector model={model} onModelChange={setModel} />
-                <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
-                  <Sparkles className="h-4 w-4" />
+                <Button 
+                  type="submit" 
+                  size="icon" 
+                  disabled={isLoading || !input.trim()}
+                  className="h-12 w-12 rounded-2xl shadow-sm hover:shadow-md transition-all"
+                >
+                  <Sparkles className="h-5 w-5" />
                 </Button>
               </div>
             </div>
