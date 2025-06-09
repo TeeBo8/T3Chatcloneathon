@@ -148,7 +148,7 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
             onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })} 
             size="icon" 
             variant="outline" 
-            className="rounded-full"
+            className="rounded-full bg-background/80 hover:bg-background/100 border-primary/20 backdrop-blur-sm"
           >
             <ArrowDown className="h-4 w-4" />
           </Button>

@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button } from "../ui/button";
 import { Check, Copy } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -34,10 +33,10 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
           variant="ghost" 
           size="icon" 
           onClick={handleCopy} 
-          className="h-8 w-8 hover:bg-accent/20 hover:text-accent transition-colors"
+          className="h-8 w-8 text-zinc-400 hover:text-zinc-100"
         >
           {isCopied ? (
-            <Check className="h-4 w-4 text-accent" />
+            <Check className="h-4 w-4 text-green-400" />
           ) : (
             <Copy className="h-4 w-4" />
           )}
@@ -47,7 +46,7 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
       
       {/* Code Highlighter avec style adapté */}
       <SyntaxHighlighter
-        style={isDark ? vscDarkPlus : prism}
+        style={isDark ? oneDark : oneLight}
         language={language}
         PreTag="div"
         customStyle={{ 
