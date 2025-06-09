@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { type Message } from "ai";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './code-block';
+import { ModelSelector, type Model } from "./model-selector";
 
 interface ChatWindowProps {
   chatId: string;
@@ -17,10 +18,13 @@ interface ChatWindowProps {
 }
 
 export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
+  const [model, setModel] = useState<Model>("groq");
+
   const { messages, input, setInput, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/chat',
+    // Le 'body' initial est toujours là, mais on va le surcharger
     body: {
-      chatId: chatId
+      chatId: chatId,
     },
     initialMessages: initialMessages,
   });
@@ -29,6 +33,20 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
 
   const handleSuggestionClick = (prompt: string) => {
     setInput(prompt);
+  };
+
+  // NOTRE NOUVELLE FONCTION DE SOUMISSION
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Empêche le rechargement de la page
+    
+    // On appelle le handleSubmit de useChat, mais en lui passant
+    // un nouveau corps de requête avec le modèle ACTUEL.
+    handleSubmit(e, {
+      data: {
+        chatId: chatId,
+        model: model, // <-- La valeur fraîche et correcte !
+      },
+    });
   };
 
   useEffect(() => {
@@ -103,7 +121,7 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
       </ScrollArea>
 
       <div className="p-4 border-t border-border bg-background">
-        <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+        <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
           <Input
             value={input}
             onChange={handleInputChange}
@@ -111,7 +129,10 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
             className="flex-1"
             disabled={isLoading}
           />
-          <Button type="submit" disabled={isLoading}>Send</Button>
+          <div className="flex items-center justify-between">
+            <ModelSelector model={model} onModelChange={setModel} />
+            <Button type="submit" disabled={isLoading}>Send</Button>
+          </div>
         </form>
       </div>
     </div>
