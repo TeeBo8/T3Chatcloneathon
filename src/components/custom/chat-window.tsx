@@ -2,7 +2,6 @@
 
 import { useChat } from "ai/react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { type Message } from "ai";
@@ -11,6 +10,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './code-block';
 import { ModelSelector, type Model } from "./model-selector";
+import Textarea from 'react-textarea-autosize';
+import { Sparkles } from "lucide-react";
 
 interface ChatWindowProps {
   chatId: string;
@@ -35,19 +36,7 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
     setInput(prompt);
   };
 
-  // NOTRE NOUVELLE FONCTION DE SOUMISSION
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Empêche le rechargement de la page
-    
-    // On appelle le handleSubmit de useChat, mais en lui passant
-    // un nouveau corps de requête avec le modèle ACTUEL.
-    handleSubmit(e, {
-      data: {
-        chatId: chatId,
-        model: model, // <-- La valeur fraîche et correcte !
-      },
-    });
-  };
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -120,20 +109,53 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
         )}
       </ScrollArea>
 
-      <div className="p-4 border-t border-border bg-background">
-        <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
-          <Input
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Type your message here..."
-            className="flex-1"
-            disabled={isLoading}
-          />
-          <div className="flex items-center justify-between">
-            <ModelSelector model={model} onModelChange={setModel} />
-            <Button type="submit" disabled={isLoading}>Send</Button>
-          </div>
-        </form>
+      <div className="p-4">
+        <div className="mx-auto max-w-2xl">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              // On garde le handleSubmit de useChat, mais on empêche la soumission si l'input est vide
+              if (!input.trim()) return;
+              handleSubmit(e, {
+                data: {
+                  chatId: chatId,
+                  model: model,
+                },
+              });
+            }}
+          >
+            <div className="flex items-end gap-2">
+              <div className="relative flex-1 flex h-full min-h-[70px] flex-col items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
+                <Textarea
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder={`Message ${model === 'gemini' ? 'Gemini...' : 'Groq...'}`}
+                  className="w-full resize-none self-center bg-transparent px-4 py-4 focus-within:outline-none"
+                  maxRows={5}
+                  rows={1}
+                  disabled={isLoading}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (!input.trim()) return;
+                      // Déclencher la soumission du formulaire
+                      const form = e.currentTarget.closest('form');
+                      if (form) {
+                        form.requestSubmit();
+                      }
+                    }
+                  }}
+                />
+              </div>
+              <div className="flex items-center gap-2 pb-2">
+                <ModelSelector model={model} onModelChange={setModel} />
+                <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
+                  <Sparkles className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
