@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { MessageSquare } from "lucide-react";
+import { DeleteChatButton } from "./delete-chat-button";
 
 // This is a React Server Component
 export async function ChatHistory() {
@@ -29,11 +30,14 @@ export async function ChatHistory() {
       </Link>
       <div className="flex-1 flex-col-reverse overflow-y-auto space-y-1">
         {userChats.map((chat) => (
-          <Link key={chat.id} href={`/chat/${chat.id}`}>
-            <div className="truncate p-2 rounded-md hover:bg-primary/10 transition-colors">
+          <div key={chat.id} className="group relative flex items-center">
+            <Link href={`/chat/${chat.id}`} className="flex-1 truncate p-2 pr-8 rounded-md hover:bg-primary/10 transition-colors">
               {chat.title}
+            </Link>
+            <div className="absolute right-0 top-0 bottom-0 flex items-center pr-1 bg-gradient-to-l from-background via-background/80 to-transparent group-hover:from-background/90">
+              <DeleteChatButton chatId={chat.id} />
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>
