@@ -33,6 +33,15 @@ export function UserInfoPanel() {
     if (user) {
       fetchSubscriptionData();
     }
+
+    // Rafraîchir les données toutes les 30 secondes
+    const interval = setInterval(() => {
+      if (user) {
+        fetchSubscriptionData();
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [user]);
 
   if (!user) return null;
