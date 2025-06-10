@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { type Message } from "ai";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './code-block';
@@ -18,9 +19,10 @@ interface ChatWindowProps {
 }
 
 export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
+  const router = useRouter();
   const [model, setModel] = useState<Model>("groq");
 
-  const { messages, input, setInput, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, input, setInput, handleInputChange, handleSubmit, isLoading, data } = useChat({
     api: '/api/chat',
     body: {
       chatId: chatId,
@@ -30,6 +32,20 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
+
+  // 🚀 EFFET MAGIQUE : Écoute les données du serveur et redirige vers la nouvelle conversation
+  useEffect(() => {
+    if (data && data.length > 0) {
+      const newChatData = data.find((d): d is { newChatId: string } => 
+        d !== null && typeof d === 'object' && 'newChatId' in d
+      );
+      if (newChatData?.newChatId) {
+        console.log('🎯 Redirection vers la nouvelle conversation:', newChatData.newChatId);
+        router.push(`/chat/${newChatData.newChatId}`);
+        router.refresh();
+      }
+    }
+  }, [data, router]);
 
   const handleSuggestionClick = (prompt: string) => {
     setInput(prompt);

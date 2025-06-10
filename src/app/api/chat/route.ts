@@ -1,4 +1,4 @@
-import { streamText } from 'ai';
+import { streamText, createDataStreamResponse } from 'ai';
 import { auth } from '@clerk/nextjs/server';
 import { nanoid } from 'nanoid';
 
@@ -22,8 +22,8 @@ const groq = createGroq({
 
 export async function POST(req: Request) {
   try {
-    const { messages, data } = await req.json(); // <-- On lit 'data'
-    const { chatId: currentChatId, model: modelProvider } = data; // <-- On extrait les infos de 'data'
+    const { messages, data } = await req.json();
+    const { chatId: currentChatId, model: modelProvider } = data;
     const { userId } = await auth();
 
     if (!userId) {
@@ -42,48 +42,57 @@ export async function POST(req: Request) {
     const model = modelProvider === 'gemini' 
       ? google('models/gemini-1.5-flash') 
       : groq('llama3-8b-8192');
-    const result = await streamText({
-      model: model,
-      messages: messages,
-      onFinish: async ({ text }) => {
-        // This is where we save the conversation to the database
-        const title = messages.length > 0 ? messages[0].content.substring(0, 50) : 'New Chat';
-        let chatId = currentChatId;
 
-        // If it's a new chat, create a chat entry first
-        if (!chatId) {
-          const newChatId = nanoid();
-          await db.insert(chats).values({
-            id: newChatId,
-            userId: userId,
-            title: title,
-          });
-          chatId = newChatId;
-        }
+    // 🚀 NOUVELLE APPROCHE : Utilisation de createDataStreamResponse
+    return createDataStreamResponse({
+      execute: dataStream => {
+        const result = streamText({
+          model: model,
+          messages: messages,
+          onFinish: async ({ text }) => {
+            // This is where we save the conversation to the database
+            const title = messages.length > 0 ? messages[0].content.substring(0, 50) : 'New Chat';
+            let chatId = currentChatId;
 
-        // Save user and assistant messages
-        await db.insert(_messages).values([
-          {
-            id: nanoid(),
-            chatId,
-            role: 'user',
-            content: userMessage.content,
+            // If it's a new chat, create a chat entry first
+            if (!chatId) {
+              const newChatId = nanoid();
+              // 🎯 MAGIE : On envoie le nouvel ID au client via le flux de données
+              dataStream.writeData({ newChatId: newChatId });
+              
+              await db.insert(chats).values({
+                id: newChatId,
+                userId: userId,
+                title: title,
+              });
+              chatId = newChatId;
+            }
+
+            // Save user and assistant messages
+            await db.insert(_messages).values([
+              {
+                id: nanoid(),
+                chatId,
+                role: 'user',
+                content: userMessage.content,
+              },
+              {
+                id: nanoid(),
+                chatId,
+                role: 'assistant',
+                content: text,
+              },
+            ]);
           },
-          {
-            id: nanoid(),
-            chatId,
-            role: 'assistant',
-            content: text,
-          },
-        ]);
+        });
+
+        // 🔥 Fusion du résultat dans le flux de données
+        result.mergeIntoDataStream(dataStream);
       },
     });
 
-    return result.toDataStreamResponse();
-
   } catch (error) {
     console.error('Error in /api/chat:', error);
-    // Ensure you return a Response object
     return new Response(JSON.stringify({ error: 'An internal server error occurred.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
