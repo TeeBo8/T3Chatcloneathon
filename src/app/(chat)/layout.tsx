@@ -1,15 +1,18 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { ThemeToggle } from "@/components/custom/theme-toggle";
 import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { ChatHistory } from "@/components/custom/chat-history";
+import { ChatHistorySkeleton } from "@/components/custom/chat-history-skeleton";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 
 const SidebarContent = () => (
   <>
     <div className="flex-1 overflow-y-auto">
-        <ChatHistory />
+        <Suspense fallback={<ChatHistorySkeleton />}>
+          <ChatHistory />
+        </Suspense>
     </div>
 
     <div className="border-t border-primary/20 pt-4 flex items-center justify-center">
