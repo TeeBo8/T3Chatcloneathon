@@ -3,7 +3,8 @@ import { auth } from '@clerk/nextjs/server';
 import { nanoid } from 'nanoid';
 
 import { db } from '@/lib/db';
-import { chats, messages as _messages } from '@/lib/db/schema';
+import { chats, messages as _messages, userSubscriptions } from '@/lib/db/schema';
+import { eq, sql } from 'drizzle-orm';
 
 // Import and initialize model providers
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
@@ -29,6 +30,27 @@ export async function POST(req: Request) {
     if (!userId) {
       return new Response('Unauthorized', { status: 401 });
     }
+
+    // --- DÉBUT DE LA LOGIQUE DU LIMITEUR ---
+    const adminUserId = process.env.ADMIN_USER_ID;
+    const MESSAGE_LIMIT = 20;
+    let limitExceeded = false;
+
+    // On applique la logique uniquement si l'utilisateur n'est pas l'admin
+    if (userId !== adminUserId) {
+      const subscription = await db.query.userSubscriptions.findFirst({
+        where: eq(userSubscriptions.userId, userId),
+      });
+
+      if (subscription && subscription.messageCount >= MESSAGE_LIMIT) {
+        limitExceeded = true;
+      }
+    }
+
+    if (limitExceeded) {
+      return new Response('Message limit exceeded. Please upgrade your plan.', { status: 429 });
+    }
+    // --- FIN DE LA LOGIQUE DU LIMITEUR ---
 
     const userMessage = messages[messages.length - 1];
     
@@ -83,6 +105,28 @@ export async function POST(req: Request) {
                 content: text,
               },
             ]);
+
+            // --- DÉBUT DE LA LOGIQUE D'INCRÉMENTATION ---
+            if (userId !== adminUserId) {
+              const subscription = await db.query.userSubscriptions.findFirst({
+                where: eq(userSubscriptions.userId, userId),
+              });
+
+              if (!subscription) {
+                // Créer une nouvelle entrée avec count = 1
+                await db.insert(userSubscriptions).values({ 
+                  id: nanoid(), 
+                  userId: userId, 
+                  messageCount: 1 
+                });
+              } else {
+                // Incrémenter le compteur existant
+                await db.update(userSubscriptions)
+                  .set({ messageCount: sql`${userSubscriptions.messageCount} + 1` })
+                  .where(eq(userSubscriptions.userId, userId));
+              }
+            }
+            // --- FIN DE LA LOGIQUE D'INCRÉMENTATION ---
           },
         });
 

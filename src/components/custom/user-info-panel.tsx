@@ -4,9 +4,36 @@ import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
+import { useEffect, useState } from "react";
 
 export function UserInfoPanel() {
   const { user } = useUser();
+  const [subscriptionData, setSubscriptionData] = useState({
+    messageCount: 0,
+    messageLimit: 20,
+    messagesRemaining: 20,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSubscriptionData = async () => {
+      try {
+        const response = await fetch('/api/user/subscription');
+        if (response.ok) {
+          const data = await response.json();
+          setSubscriptionData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching subscription data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchSubscriptionData();
+    }
+  }, [user]);
 
   if (!user) return null;
 
@@ -31,10 +58,20 @@ export function UserInfoPanel() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Usage</span>
-              <span className="text-muted-foreground">0/20</span>
+              <span className="text-muted-foreground">
+                {isLoading ? "..." : `${subscriptionData.messageCount}/${subscriptionData.messageLimit}`}
+              </span>
             </div>
-            <Progress value={0} className="h-2" />
-            <p className="text-xs text-muted-foreground">20 messages remaining this month</p>
+            <Progress 
+              value={isLoading ? 0 : (subscriptionData.messageCount / subscriptionData.messageLimit) * 100} 
+              className="h-2" 
+            />
+            <p className="text-xs text-muted-foreground">
+              {isLoading 
+                ? "Loading..." 
+                : `${subscriptionData.messagesRemaining} messages remaining this month`
+              }
+            </p>
           </div>
         </CardContent>
       </Card>
