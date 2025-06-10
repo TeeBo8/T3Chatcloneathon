@@ -11,7 +11,8 @@ import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './code-block';
 import { ModelSelector, type Model } from "./model-selector";
 import Textarea from 'react-textarea-autosize';
-import { Sparkles, ArrowDown } from "lucide-react";
+import { Sparkles, ArrowDown, Settings } from "lucide-react";
+import Link from "next/link";
 
 interface ChatWindowProps {
   chatId: string;
@@ -76,8 +77,23 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
     };
   }, []);
 
+  // Génération intelligente du titre du chat
+  const chatTitle = initialMessages.length > 0 
+    ? initialMessages.find(m => m.role === 'user')?.content.substring(0, 50) + '...' || 'New Chat'
+    : 'New Chat';
+
   return (
     <div className="flex flex-col h-full">
+      {/* HEADER DE LA ZONE DE CHAT */}
+      <header className="flex items-center justify-between p-4 border-b bg-background">
+        <h2 className="text-lg font-semibold truncate">{chatTitle}</h2>
+        <Link href="/settings">
+          <Button variant="ghost" size="icon">
+            <Settings className="h-5 w-5" />
+          </Button>
+        </Link>
+      </header>
+
       {/* Main chat area qui prend tout l'espace disponible */}
       <div className="flex-1 overflow-y-auto p-4">
         <div className="mx-auto max-w-2xl space-y-6">
