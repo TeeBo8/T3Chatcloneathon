@@ -8,8 +8,8 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "T3 Cloneathon",
-  description: "A clone of T3 Chat for the Cloneathon",
+  title: "Cyberpunkchat",
+  description: "A cyberpunk-themed AI chat application",
 };
 
 export default function RootLayout({

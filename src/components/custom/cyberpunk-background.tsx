@@ -38,9 +38,9 @@ const CyberpunkBackground: React.FC<CyberpunkBackgroundProps> = ({
   const timeRef = useRef(0);
 
   const [showControls, setShowControls] = useState(false);
-  const [intensity, setIntensity] = useState(0.1);
-  const [speed, setSpeed] = useState(0.1);
-  const [gridDensity, setGridDensity] = useState(0.1);
+  const [intensity, setIntensity] = useState(0.2);
+  const [speed, setSpeed] = useState(0.6);
+  const [gridDensity, setGridDensity] = useState(1.0);
 
   useEffect(() => {
     const cyberpunkChars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";

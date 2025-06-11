@@ -18,8 +18,8 @@ export default async function LandingPage() {
       <div className="text-center max-w-2xl">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
           <span className="text-cyan-100">Unleash the Power of AI with</span>{" "}
-          <span className="bg-gradient-to-r from-cyan-400 to-magenta-500 bg-clip-text text-transparent">
-            T3 Cloneathon
+          <span className="bg-gradient-to-r from-pink-400 via-fuchsia-500 to-pink-600 bg-clip-text text-transparent">
+            Cyberpunkchat
           </span>
         </h1>
         <p className="text-lg md:text-xl text-cyan-300/80 mb-4">

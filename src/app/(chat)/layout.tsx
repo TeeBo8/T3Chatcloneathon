@@ -38,7 +38,7 @@ export default function ChatLayout({
       {/* Desktop Sidebar */}
       <aside className="w-72 shrink-0 bg-gray-100 dark:bg-gray-950 p-4 hidden md:flex flex-col">
         <div className="flex items-center justify-between mb-4">
-            <div className="text-lg font-bold">T3 Cloneathon</div>
+            <div className="text-lg font-bold">Cyberpunkchat</div>
             <ThemeToggle />
         </div>
         <SidebarContent />
@@ -56,7 +56,7 @@ export default function ChatLayout({
             </SheetTrigger>
             <SheetContent side="left" className="w-72 p-4 flex flex-col">
               <SheetHeader className="mb-4">
-                <SheetTitle className="text-left">T3 Cloneathon</SheetTitle>
+                <SheetTitle className="text-left">Cyberpunkchat</SheetTitle>
               </SheetHeader>
               <SidebarContent />
             </SheetContent>

@@ -2,13 +2,10 @@
 
 import { useChat } from "ai/react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { type Message } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { CodeBlock } from './code-block';
+import { ChatMessage } from './chat-message';
 import { ModelSelector, type Model } from "./model-selector";
 import Textarea from 'react-textarea-autosize';
 import { Sparkles, ArrowDown, Settings } from "lucide-react";
@@ -100,54 +97,7 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
           {messages.length > 0 ? (
             <>
               {messages.map((m) => (
-                <div key={m.id} className={`flex items-start gap-4 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarFallback>{m.role === "user" ? "U" : "AI"}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    {m.role === 'user' ? (
-                      // Le message de l'utilisateur est dans une bulle à DROITE
-                      <div className="rounded-lg bg-primary p-3 text-primary-foreground ml-auto max-w-[80%]">
-                        <div className="prose prose-p:my-0 break-words">
-                          <ReactMarkdown>
-                            {m.content}
-                          </ReactMarkdown>
-                        </div>
-                      </div>
-                    ) : (
-                      // Le message de l'IA à GAUCHE, juste le texte
-                      <div className="prose dark:prose-invert prose-p:my-0 max-w-none break-words">
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          components={{
-                            code({ className, children, ...props }: React.HTMLProps<HTMLElement>) {
-                              const match = /language-(\w+)/.exec(className || '');
-                              const codeString = String(children).replace(/\n$/, '');
-                              const inline = !className?.includes('language-');
-                              
-                              return !inline && match ? (
-                                <CodeBlock
-                                  language={match[1]}
-                                  value={codeString}
-                                />
-                              ) : (
-                                <code className={`px-1.5 py-0.5 rounded-md font-mono text-sm ${
-                                  m.role === 'user' 
-                                    ? 'bg-primary-foreground/20 text-primary-foreground' 
-                                    : 'bg-primary/20 text-primary'
-                                }`} {...props}>
-                                  {children}
-                                </code>
-                              );
-                            },
-                          }}
-                        >
-                          {m.content}
-                        </ReactMarkdown>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <ChatMessage key={m.id} message={m} />
               ))}
               <div ref={messagesEndRef} />
             </>
