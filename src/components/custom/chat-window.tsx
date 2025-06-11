@@ -20,7 +20,7 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
   const router = useRouter();
   const [model, setModel] = useState<Model>("groq");
 
-  const { messages, input, setInput, handleInputChange, handleSubmit, isLoading, data, reload } = useChat({
+  const { messages, input, setInput, handleInputChange, handleSubmit, isLoading, data, reload, setMessages } = useChat({
     api: '/api/chat',
     initialMessages: initialMessages,
     body: {
@@ -98,7 +98,7 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
           {messages.length > 0 ? (
             <>
               {messages.map((m) => (
-                <ChatMessage key={m.id} message={m} reload={reload} chatId={chatId} model={model} />
+                <ChatMessage key={m.id} message={m} reload={reload} chatId={chatId} model={model} setMessages={setMessages} />
               ))}
               <div ref={messagesEndRef} />
             </>
