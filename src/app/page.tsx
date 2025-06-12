@@ -37,7 +37,7 @@ export default async function LandingPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 max-w-4xl text-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 md:mt-20 max-w-4xl text-center">
         <div className="flex flex-col items-center">
           <Zap className="h-10 w-10 text-cyan-400 mb-2" />
           <h3 className="font-semibold text-xl text-cyan-100">Blazing Fast</h3>

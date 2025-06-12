@@ -1,7 +1,6 @@
 "use client"
 import { type Message } from "ai";
 import { useState } from "react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from "./code-block";
@@ -92,13 +91,8 @@ export function ChatMessage({ message, reload, chatId, model, setMessages }: Cha
   };
 
   return (
-    <div className={`group relative flex items-start gap-4 ${isUser ? 'flex-row-reverse' : ''}`}>
-      <Avatar className="h-8 w-8 shrink-0">
-        <AvatarFallback>{role === "user" ? "U" : "AI"}</AvatarFallback>
-      </Avatar>
+    <div className={`group relative ${isUser ? 'flex justify-end' : 'flex justify-start'}`}>
       <div className="flex-1">
-        <p className="font-bold mb-1">{role === "user" ? "You" : "AI"}</p>
-        
         {isUser ? (
           // Le message de l'utilisateur est dans une bulle à DROITE
           <div className="rounded-lg bg-primary p-3 text-primary-foreground ml-auto max-w-[80%]">
