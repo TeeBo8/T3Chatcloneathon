@@ -1,5 +1,5 @@
 import { streamText, createDataStreamResponse } from 'ai';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { nanoid } from 'nanoid';
 
 import { db } from '@/lib/db';
@@ -13,14 +13,6 @@ import { createGroq } from '@ai-sdk/groq';
 // IMPORTANT! Set the runtime to edge
 export const runtime = 'edge';
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
-
-const groq = createGroq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 export async function POST(req: Request) {
   try {
     const { messages, data } = await req.json();
@@ -30,6 +22,28 @@ export async function POST(req: Request) {
     if (!userId) {
       return new Response('Unauthorized', { status: 401 });
     }
+
+    // --- RÉCUPÉRATION DES CLÉS UTILISATEUR (BYOK) ---
+    let userGroqKey: string | undefined;
+    let userGeminiKey: string | undefined;
+
+    try {
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+      userGroqKey = user.privateMetadata?.groqApiKey as string | undefined;
+      userGeminiKey = user.privateMetadata?.geminiApiKey as string | undefined;
+    } catch (error) {
+      console.warn("Unable to retrieve user keys, using default keys:", error);
+    }
+
+    // Initialiser les providers AVEC la clé de l'utilisateur si elle existe
+    const google = createGoogleGenerativeAI({
+      apiKey: userGeminiKey || process.env.GEMINI_API_KEY,
+    });
+    
+    const groq = createGroq({
+      apiKey: userGroqKey || process.env.GROQ_API_KEY,
+    });
 
     // --- DÉBUT DE LA LOGIQUE DU LIMITEUR ---
     const adminUserId = process.env.ADMIN_USER_ID;
@@ -54,10 +68,18 @@ export async function POST(req: Request) {
 
     const userMessage = messages[messages.length - 1];
     
-    // Vérification des clés API
-    if (modelProvider === 'gemini' && !process.env.GEMINI_API_KEY) {
-      console.error('❌ ERREUR: GEMINI_API_KEY manquante dans .env.local');
-      return new Response('Gemini API key not configured', { status: 500 });
+    // Vérification des clés API (utilisateur ou par défaut)
+    const effectiveGeminiKey = userGeminiKey || process.env.GEMINI_API_KEY;
+    const effectiveGroqKey = userGroqKey || process.env.GROQ_API_KEY;
+    
+    if (modelProvider === 'gemini' && !effectiveGeminiKey) {
+      console.error('❌ ERROR: No Gemini key available (neither user nor default)');
+      return new Response('Gemini API key not configured. Please add your own API key in Settings.', { status: 500 });
+    }
+    
+    if (modelProvider === 'groq' && !effectiveGroqKey) {
+      console.error('❌ ERROR: No Groq key available (neither user nor default)');
+      return new Response('Groq API key not configured. Please add your own API key in Settings.', { status: 500 });
     }
     
     // Select the model based on the provider string from the client
