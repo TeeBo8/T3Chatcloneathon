@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Zap, Sparkles, Lock } from 'lucide-react';
+import { Zap, Sparkles, Lock, Smartphone } from 'lucide-react';
 import CyberpunkBackground from "@/components/custom/cyberpunk-background";
 
 export default async function LandingPage() {
@@ -15,6 +15,12 @@ export default async function LandingPage() {
 
   return (
     <CyberpunkBackground>
+      {/* BANDEAU MOBILE */}
+      <div className="md:hidden flex items-center gap-2 p-2 mb-8 text-sm rounded-lg bg-primary/10 text-primary-foreground border border-primary/20">
+        <Smartphone className="h-5 w-5" />
+        <p>For the best experience, please use a desktop browser.</p>
+      </div>
+
       <div className="text-center max-w-2xl">
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
           <span className="text-cyan-100">Unleash the Power of AI with</span>{" "}

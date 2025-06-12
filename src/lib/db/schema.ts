@@ -12,6 +12,9 @@ export const chats = pgTable("chats", {
   userId: varchar("user_id", { length: 256 }).notNull(), // To store the Clerk user ID
   title: text("title").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  
+  // NOUVEAUX CHAMPS
+  sharePath: text("share_path").unique(), // L'ID unique pour le lien de partage
 })
 
 // Table pour stocker les messages individuels si on veut une structure plus normalisée
