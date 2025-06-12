@@ -133,19 +133,19 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-              <h2 className="text-xl md:text-2xl font-bold mb-2">How can I help you?</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md">
-                <Button variant="outline" onClick={() => handleSuggestionClick('How does AI work?')}>
-                  How does AI work?
+              <h2 className="text-xl md:text-2xl font-bold mb-4">How can I help you, choom?</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+                <Button variant="outline" onClick={() => handleSuggestionClick('Tell me about the development of Cyberpunk 2077: the hype, delays, and launch issues.')}>
+                  Cyberpunk 2077: Development Hell
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick('What is the meaning of life?')}>
-                  What is the meaning of life?
+                <Button variant="outline" onClick={() => handleSuggestionClick('Describe the world of Night City: the factions, the tech, and key characters.')}>
+                  The World of Night City
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick('Create a poem about a robot')}>
-                  Create a poem about a robot
+                <Button variant="outline" onClick={() => handleSuggestionClick('Explain the gameplay mechanics of Cyberpunk 2077: classes, skills, and weapons.')}>
+                  Gameplay & Mechanics
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick('Explain quantum computing in simple terms')}>
-                  Explain quantum computing
+                <Button variant="outline" onClick={() => handleSuggestionClick('Summarize the critical reception of Cyberpunk 2077, both positive and negative, and the impact of its updates.')}>
+                  Critical Reception & Redemption
                 </Button>
               </div>
             </div>
