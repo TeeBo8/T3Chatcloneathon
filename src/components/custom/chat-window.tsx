@@ -184,6 +184,16 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
 
       {/* 💫 INPUT FLOTTANT AVEC REF POUR MESURE DYNAMIQUE */}
       <div className="absolute bottom-0 left-0 right-0 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-3xl p-2 md:p-4">
+        {/* 🚨 Message d'avertissement pour les conversations longues */}
+        {messages.length > 20 && (
+          <div className="text-center text-xs text-muted-foreground p-2 mb-2 bg-background/60 backdrop-blur-sm rounded-lg border border-border/50">
+            Conversation is getting long. For best performance, consider starting a{" "}
+            <Link href="/chat" className="underline text-primary hover:text-primary/80">
+              new chat
+            </Link>
+            .
+          </div>
+        )}
         <div className="relative rounded-2xl shadow-lg bg-background/80 backdrop-blur-md border border-primary/20">
           <form
             ref={formRef}

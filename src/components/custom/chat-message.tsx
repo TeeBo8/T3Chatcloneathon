@@ -1,6 +1,6 @@
 "use client"
 import { type Message } from "ai";
-import { useState } from "react";
+import React, { useState } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from "./code-block";
@@ -16,7 +16,7 @@ interface ChatMessageProps {
   setMessages: (messages: Message[] | ((messages: Message[]) => Message[])) => void;
 }
 
-export function ChatMessage({ message, reload, chatId, model, setMessages }: ChatMessageProps) {
+export const ChatMessage = React.memo(function ChatMessage({ message, reload, chatId, model, setMessages }: ChatMessageProps) {
   const { id, role, content } = message;
   const isAssistant = role === 'assistant';
   const isUser = role === 'user';
@@ -173,4 +173,4 @@ export function ChatMessage({ message, reload, chatId, model, setMessages }: Cha
       )}
     </div>
   );
-} 
+}); 
