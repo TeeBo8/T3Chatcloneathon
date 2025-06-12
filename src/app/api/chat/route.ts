@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     const effectiveGeminiKey = userGeminiKey || process.env.GEMINI_API_KEY;
     const effectiveGroqKey = userGroqKey || process.env.GROQ_API_KEY;
     
-    if (modelProvider === 'gemini' && !effectiveGeminiKey) {
+    if ((modelProvider === 'gemini-2.0' || modelProvider === 'gemini-1.5') && !effectiveGeminiKey) {
       console.error('❌ ERROR: No Gemini key available (neither user nor default)');
       return new Response('Gemini API key not configured. Please add your own API key in Settings.', { status: 500 });
     }
@@ -82,10 +82,21 @@ export async function POST(req: Request) {
       return new Response('Groq API key not configured. Please add your own API key in Settings.', { status: 500 });
     }
     
-    // Select the model based on the provider string from the client
-    const model = modelProvider === 'gemini' 
-      ? google('models/gemini-1.5-flash') 
-      : groq('llama3-8b-8192');
+    // Logique de sélection améliorée avec switch
+    let model;
+    switch (modelProvider) {
+      case 'gemini-2.0':
+        // Gemini 2.0 Flash - stable et performant !
+        model = google('models/gemini-2.0-flash');
+        break;
+      case 'gemini-1.5':
+        model = google('models/gemini-1.5-flash');
+        break;
+      case 'groq':
+      default:
+        model = groq('llama3-8b-8192');
+        break;
+    }
 
     // 🚀 NOUVELLE APPROCHE : Utilisation de createDataStreamResponse
     return createDataStreamResponse({

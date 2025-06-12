@@ -124,9 +124,10 @@ export function ChatMessage({ message, reload, chatId, model, setMessages }: Cha
           </div>
         ) : (
           // Le message de l'IA à GAUCHE, mode affichage normal
-          <div className="prose dark:prose-invert prose-p:my-0 max-w-none break-words">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
+          <div className="flex-1 overflow-hidden">
+            <div className="prose dark:prose-invert prose-p:my-0 max-w-full break-words">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
               components={{
                 code({ className, children, ...props }: React.HTMLProps<HTMLElement>) {
                   const match = /language-(\w+)/.exec(className || '');
@@ -148,6 +149,7 @@ export function ChatMessage({ message, reload, chatId, model, setMessages }: Cha
             >
               {content}
             </ReactMarkdown>
+            </div>
           </div>
         )}
       </div>

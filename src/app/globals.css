@@ -253,3 +253,28 @@
 .dark .cyberpunk-toaster [data-sonner-toast][data-type="error"] [data-icon] {
   color: hsl(14.3529 100% 50%) !important;
 }
+
+/* 💣 CSS BRUTAL FORCE pour les blocs de code récalcitrants */
+@layer components {
+  /* Force le wrapping dans TOUS les éléments de code */
+  .prose pre,
+  .prose code {
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-width: 100% !important;
+  }
+  
+  /* Spécifiquement pour SyntaxHighlighter */
+  .prose pre > code,
+  .prose pre span {
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+  }
+  
+  /* Force les spans colorés par SyntaxHighlighter à aussi se comporter */
+  .prose .token {
+    word-break: break-all !important;
+    overflow-wrap: break-word !important;
+  }
+}

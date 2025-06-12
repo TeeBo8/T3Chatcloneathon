@@ -25,7 +25,7 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
   const isDark = theme === 'dark';
 
   return (
-    <div className="relative my-4 rounded-md border border-border overflow-hidden bg-card">
+    <div className="relative my-4 rounded-md border border-border overflow-hidden bg-card text-sm">
       {/* Header avec style Cyberpunk */}
       <div className="flex items-center justify-between bg-muted px-4 py-2 border-b border-border">
         <span className="text-sm font-mono text-accent font-medium">{language}</span>
@@ -44,20 +44,28 @@ export function CodeBlock({ language, value }: CodeBlockProps) {
         </Button>
       </div>
       
-      {/* Code Highlighter avec style adapté */}
-      <SyntaxHighlighter
-        style={isDark ? oneDark : oneLight}
-        language={language}
-        PreTag="div"
-        customStyle={{ 
-          margin: '0', 
-          borderRadius: '0',
-          padding: '1rem',
-          backgroundColor: 'transparent',
-        }}
-      >
-        {value}
-      </SyntaxHighlighter>
+      {/* Code Highlighter avec FORCE BRUTE anti-débordement */}
+      <div className="overflow-x-auto">
+        <SyntaxHighlighter
+          style={isDark ? oneDark : oneLight}
+          language={language}
+          PreTag="div"
+          customStyle={{ 
+            margin: '0', 
+            borderRadius: '0',
+            padding: '1rem',
+            backgroundColor: 'transparent',
+            // CSS BRUTAL FORCE pour casser les mots longs
+            wordBreak: 'break-all',
+            overflowWrap: 'break-word',
+            whiteSpace: 'pre-wrap',
+          }}
+          wrapLines={true}
+          wrapLongLines={true}
+        >
+          {value}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 } 

@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export type Model = "groq" | "gemini";
+export type Model = "gemini-2.0" | "groq" | "gemini-1.5";
 
 interface ModelSelectorProps {
   model: Model;
@@ -18,12 +18,13 @@ interface ModelSelectorProps {
 export function ModelSelector({ model, onModelChange }: ModelSelectorProps) {
   return (
     <Select value={model} onValueChange={(value) => onModelChange(value as Model)}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[200px]">
         <SelectValue placeholder="Select a model" />
       </SelectTrigger>
       <SelectContent>
+        <SelectItem value="gemini-2.0">Gemini 2.0 Flash</SelectItem>
         <SelectItem value="groq">Groq (Llama 3)</SelectItem>
-        <SelectItem value="gemini">Gemini (Pro 1.5)</SelectItem>
+        <SelectItem value="gemini-1.5">Gemini 1.5 Pro</SelectItem>
       </SelectContent>
     </Select>
   );

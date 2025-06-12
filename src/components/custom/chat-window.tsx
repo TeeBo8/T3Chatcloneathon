@@ -7,7 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChatMessage } from './chat-message';
 import { ModelSelector, type Model } from "./model-selector";
-import { ArrowDown, Settings, Paperclip, Search, Send } from "lucide-react";
+import { ArrowDown, Settings, Paperclip, Search, Send, Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import TextareaAutosize from "react-textarea-autosize";
 
@@ -18,7 +19,7 @@ interface ChatWindowProps {
 
 export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
   const router = useRouter();
-  const [model, setModel] = useState<Model>("groq");
+  const [model, setModel] = useState<Model>("gemini-2.0");
 
   const { messages, input, setInput, handleInputChange, handleSubmit, isLoading, data, reload, setMessages } = useChat({
     api: '/api/chat',
@@ -112,6 +113,22 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
               {messages.map((m) => (
                 <ChatMessage key={m.id} message={m} reload={reload} chatId={chatId} model={model} setMessages={setMessages} />
               ))}
+              
+              {/* 🤖 INDICATEUR DE CHARGEMENT ÉLÉGANT */}
+              {isLoading && (
+                <div className="flex items-start space-x-4">
+                  <Avatar className="w-8 h-8 border">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                      AI
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex items-center gap-2 pt-2">
+                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    <span className="text-muted-foreground">Thinking...</span>
+                  </div>
+                </div>
+              )}
+              
               <div ref={messagesEndRef} />
             </div>
           ) : (
@@ -130,6 +147,21 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
                 <Button variant="outline" onClick={() => handleSuggestionClick('Explain quantum computing in simple terms')}>
                   Explain quantum computing
                 </Button>
+              </div>
+            </div>
+          )}
+          
+          {/* 🤖 INDICATEUR DE CHARGEMENT POUR ÉTAT VIDE */}
+          {isLoading && messages.length === 0 && (
+            <div className="flex items-start space-x-4 mt-8">
+              <Avatar className="w-8 h-8 border">
+                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                  AI
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex items-center gap-2 pt-2">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                <span className="text-muted-foreground">Thinking...</span>
               </div>
             </div>
           )}
@@ -172,7 +204,7 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
               <TextareaAutosize
                 value={input}
                 onChange={handleInputChange}
-                placeholder={`Ask ${model === 'gemini' ? 'Gemini' : 'Groq'}...`}
+                placeholder={`Ask ${model.startsWith('gemini') ? 'Gemini' : 'Groq'}...`}
                 className="w-full bg-transparent resize-none
                            border-none 
                            focus:ring-0 
