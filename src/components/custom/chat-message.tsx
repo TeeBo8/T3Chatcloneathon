@@ -123,8 +123,8 @@ export const ChatMessage = React.memo(function ChatMessage({ message, reload, ch
             </div>
           </div>
         ) : (
-          // Le message de l'IA à GAUCHE, mode affichage normal
-          <div className="flex-1 overflow-hidden">
+          // Le message de l'IA à GAUCHE, mode affichage normal avec bordure stylée
+          <div className="flex-1 overflow-hidden rounded-md transition-colors group-hover:bg-primary/5 p-3">
             <div className="prose dark:prose-invert prose-p:my-0 max-w-full break-words">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}

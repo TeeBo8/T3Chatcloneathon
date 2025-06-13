@@ -135,19 +135,38 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
               <h2 className="text-xl md:text-2xl font-bold mb-4">How can I help you, choom?</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
-                <Button variant="outline" onClick={() => handleSuggestionClick('Tell me about the development of Cyberpunk 2077: the hype, delays, and launch issues.')}>
+                <Button 
+                  variant="outline" 
+                  className="bg-background/50 backdrop-blur-sm" 
+                  onClick={() => handleSuggestionClick('Tell me about the development of Cyberpunk 2077: the hype, delays, and launch issues.')}
+                >
                   Cyberpunk 2077: Development Hell
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick('Describe the world of Night City: the factions, the tech, and key characters.')}>
+                <Button 
+                  variant="outline" 
+                  className="bg-background/50 backdrop-blur-sm" 
+                  onClick={() => handleSuggestionClick('Describe the world of Night City: the factions, the tech, and key characters.')}
+                >
                   The World of Night City
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick('Explain the gameplay mechanics of Cyberpunk 2077: classes, skills, and weapons.')}>
+                <Button 
+                  variant="outline" 
+                  className="bg-background/50 backdrop-blur-sm" 
+                  onClick={() => handleSuggestionClick('Explain the gameplay mechanics of Cyberpunk 2077: classes, skills, and weapons.')}
+                >
                   Gameplay & Mechanics
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick('Summarize the critical reception of Cyberpunk 2077, both positive and negative, and the impact of its updates.')}>
+                <Button 
+                  variant="outline" 
+                  className="bg-background/50 backdrop-blur-sm" 
+                  onClick={() => handleSuggestionClick('Summarize the critical reception of Cyberpunk 2077, both positive and negative, and the impact of its updates.')}
+                >
                   Critical Reception & Redemption
                 </Button>
               </div>
+              <p className="text-sm text-muted-foreground mt-8">
+                ...or ask anything else. The sky is the limit.
+              </p>
             </div>
           )}
           
