@@ -9,6 +9,7 @@ import { eq, sql } from 'drizzle-orm';
 // Import and initialize model providers
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
+import { createOpenAI } from '@ai-sdk/openai';
 
 // IMPORTANT! Set the runtime to edge
 export const runtime = 'edge';
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
       return new Response('Unauthorized', { status: 401 });
     }
 
-    // --- RÉCUPÉRATION DES CLÉS UTILISATEUR (BYOK) ---
+    // Retrieve user API keys (BYOK)
     let userGroqKey: string | undefined;
     let userGeminiKey: string | undefined;
 
@@ -45,48 +46,51 @@ export async function POST(req: Request) {
       apiKey: userGroqKey || process.env.GROQ_API_KEY,
     });
 
-    // --- DÉBUT DE LA LOGIQUE DU LIMITEUR ---
+    // OpenRouter for free premium models
+    const openrouter = createOpenAI({
+      apiKey: process.env.OPENROUTER_API_KEY,
+      baseURL: 'https://openrouter.ai/api/v1',
+    });
+
+    // Rate limiting (except for admin)
     const adminUserId = process.env.ADMIN_USER_ID;
     const MESSAGE_LIMIT = 20;
-    let limitExceeded = false;
 
-    // On applique la logique uniquement si l'utilisateur n'est pas l'admin
     if (userId !== adminUserId) {
       const subscription = await db.query.userSubscriptions.findFirst({
         where: eq(userSubscriptions.userId, userId),
       });
 
       if (subscription && subscription.messageCount >= MESSAGE_LIMIT) {
-        limitExceeded = true;
+        return new Response('Message limit exceeded. Please upgrade your plan.', { status: 429 });
       }
     }
 
-    if (limitExceeded) {
-      return new Response('Message limit exceeded. Please upgrade your plan.', { status: 429 });
-    }
-    // --- FIN DE LA LOGIQUE DU LIMITEUR ---
-
     const userMessage = messages[messages.length - 1];
     
-    // Vérification des clés API (utilisateur ou par défaut)
+    // API key validation
     const effectiveGeminiKey = userGeminiKey || process.env.GEMINI_API_KEY;
     const effectiveGroqKey = userGroqKey || process.env.GROQ_API_KEY;
     
     if ((modelProvider === 'gemini-2.0' || modelProvider === 'gemini-1.5') && !effectiveGeminiKey) {
-      console.error('❌ ERROR: No Gemini key available (neither user nor default)');
       return new Response('Gemini API key not configured. Please add your own API key in Settings.', { status: 500 });
     }
     
     if (modelProvider === 'groq' && !effectiveGroqKey) {
-      console.error('❌ ERROR: No Groq key available (neither user nor default)');
       return new Response('Groq API key not configured. Please add your own API key in Settings.', { status: 500 });
     }
+
+    if (modelProvider === 'deepseek-free' && !process.env.OPENROUTER_API_KEY) {
+      return new Response('OpenRouter API key not configured.', { status: 500 });
+    }
     
-    // Logique de sélection améliorée avec switch
+    // Model selection
     let model;
     switch (modelProvider) {
+      case 'deepseek-free':
+        model = openrouter('deepseek/deepseek-chat-v3-0324:free');
+        break;
       case 'gemini-2.0':
-        // Gemini 2.0 Flash - stable et performant !
         model = google('models/gemini-2.0-flash');
         break;
       case 'gemini-1.5':
@@ -98,21 +102,20 @@ export async function POST(req: Request) {
         break;
     }
 
-    // 🚀 NOUVELLE APPROCHE : Utilisation de createDataStreamResponse
     return createDataStreamResponse({
       execute: dataStream => {
         const result = streamText({
           model: model,
           messages: messages,
+          maxTokens: 4096,
           onFinish: async ({ text }) => {
-            // This is where we save the conversation to the database
+            // Save conversation to database
             const title = messages.length > 0 ? messages[0].content.substring(0, 50) : 'New Chat';
             let chatId = currentChatId;
 
-            // If it's a new chat, create a chat entry first
+            // Create chat entry for new conversations
             if (!chatId) {
               const newChatId = nanoid();
-              // 🎯 MAGIE : On envoie le nouvel ID au client via le flux de données
               dataStream.writeData({ newChatId: newChatId });
               
               await db.insert(chats).values({
@@ -123,7 +126,7 @@ export async function POST(req: Request) {
               chatId = newChatId;
             }
 
-            // Save user and assistant messages
+            // Save messages
             await db.insert(_messages).values([
               {
                 id: nanoid(),
@@ -139,31 +142,27 @@ export async function POST(req: Request) {
               },
             ]);
 
-            // --- DÉBUT DE LA LOGIQUE D'INCRÉMENTATION ---
+            // Update usage counter (except for admin)
             if (userId !== adminUserId) {
               const subscription = await db.query.userSubscriptions.findFirst({
                 where: eq(userSubscriptions.userId, userId),
               });
 
               if (!subscription) {
-                // Créer une nouvelle entrée avec count = 1
                 await db.insert(userSubscriptions).values({ 
                   id: nanoid(), 
                   userId: userId, 
                   messageCount: 1 
                 });
               } else {
-                // Incrémenter le compteur existant
                 await db.update(userSubscriptions)
                   .set({ messageCount: sql`${userSubscriptions.messageCount} + 1` })
                   .where(eq(userSubscriptions.userId, userId));
               }
             }
-            // --- FIN DE LA LOGIQUE D'INCRÉMENTATION ---
           },
         });
 
-        // 🔥 Fusion du résultat dans le flux de données
         result.mergeIntoDataStream(dataStream);
       },
     });

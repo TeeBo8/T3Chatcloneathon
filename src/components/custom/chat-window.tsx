@@ -19,7 +19,7 @@ interface ChatWindowProps {
 
 export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
   const router = useRouter();
-  const [model, setModel] = useState<Model>("gemini-2.0");
+  const [model, setModel] = useState<Model>("deepseek-free"); // DeepSeek reste le roi de la stabilité
 
   const { messages, input, setInput, handleInputChange, handleSubmit, isLoading, data, reload, setMessages } = useChat({
     api: '/api/chat',
@@ -47,17 +47,18 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
 
   // 🚀 EFFET MAGIQUE : Écoute les données du serveur et redirige vers la nouvelle conversation
   useEffect(() => {
-    if (data && data.length > 0) {
+    // CONDITION : On n'exécute cette logique QUE si on est dans un nouveau chat (chatId est vide)
+    if (!chatId && data && data.length > 0) {
       const newChatData = data.find((d): d is { newChatId: string } => 
         d !== null && typeof d === 'object' && 'newChatId' in d
       );
       if (newChatData?.newChatId) {
         console.log('🎯 Redirection vers la nouvelle conversation:', newChatData.newChatId);
         router.push(`/chat/${newChatData.newChatId}`);
-        router.refresh();
+        // Pas besoin de router.refresh() ici, le push va re-render la page.
       }
     }
-  }, [data, router]);
+  }, [data, router, chatId]); // <-- Ajoute chatId aux dépendances !
 
   const handleSuggestionClick = (prompt: string) => {
     setInput(prompt);
@@ -233,7 +234,12 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
               <TextareaAutosize
                 value={input}
                 onChange={handleInputChange}
-                placeholder={`Ask ${model.startsWith('gemini') ? 'Gemini' : 'Groq'}...`}
+                placeholder={`Ask ${
+                  model.startsWith('llama') ? 'Llama' :
+                  model.startsWith('gemini') ? 'Gemini' : 
+                  model.startsWith('deepseek') ? 'DeepSeek' : 
+                  'Groq'
+                }...`}
                 className="w-full bg-transparent resize-none
                            border-none 
                            focus:ring-0 
