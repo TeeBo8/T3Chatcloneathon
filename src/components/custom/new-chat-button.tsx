@@ -8,8 +8,8 @@ export function NewChatButton() {
   const router = useRouter();
 
   const handleNewChat = () => {
-    // Force la navigation et le rafraîchissement
-    router.push("/chat");
+    // Redirection vers la racine où se trouve maintenant le chat principal
+    router.push("/");
     router.refresh();
   };
 

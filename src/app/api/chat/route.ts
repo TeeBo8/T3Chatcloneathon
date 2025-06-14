@@ -21,7 +21,13 @@ export async function POST(req: Request) {
     const { userId } = await auth();
 
     if (!userId) {
-      return new Response('Unauthorized', { status: 401 });
+      return new Response(JSON.stringify({
+        status: 401,
+        message: 'Please sign in to continue the conversation.',
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     // Retrieve user API keys (BYOK)

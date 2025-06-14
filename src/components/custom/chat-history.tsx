@@ -12,11 +12,17 @@ export async function ChatHistory() {
     return null; // Or some other UI for logged-out state
   }
 
-  // Fetch the chat history for the current user
-  const userChats = await db
-    .select()
-    .from(chats)
-    .where(eq(chats.userId, userId));
+  // Fetch the chat history for the current user avec gestion d'erreur
+  let userChats = [];
+  try {
+    userChats = await db
+      .select()
+      .from(chats)
+      .where(eq(chats.userId, userId));
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    return null;
+  }
 
   return (
     <div className="flex flex-col flex-1 overflow-y-auto">

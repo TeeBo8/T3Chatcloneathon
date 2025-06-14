@@ -35,7 +35,7 @@ export function DeleteChatButton({ chatId }: DeleteChatButtonProps) {
         toast.success("Conversation deleted successfully")
         // If we're currently viewing the deleted chat, redirect to new chat
         if (currentChatId === chatId) {
-          router.push("/chat")
+          router.push("/")
         }
       }
     } catch (error) {
