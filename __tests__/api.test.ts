@@ -121,8 +121,11 @@ describe('/api/chat API Route', () => {
     const response = await POST(request);
 
     expect(response.status).toBe(401);
-    const responseText = await response.text();
-    expect(responseText).toBe('Unauthorized');
+    const responseJson = await response.json();
+    expect(responseJson).toEqual({
+      status: 401,
+      message: 'Please sign in to continue the conversation.',
+    });
   });
 
   it('should handle errors gracefully', async () => {
