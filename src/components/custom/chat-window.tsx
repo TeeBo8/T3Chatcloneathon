@@ -43,29 +43,19 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
   useEffect(() => {
     if (error) {
       console.log('Erreur détectée:', error);
-      const errorMessage = error.message;
+      const errorMessage = error.message.toLowerCase();
       
-      try {
-        const parsedError = JSON.parse(errorMessage);
-        if (parsedError.status === 401) {
-          toast.info("Please sign in to continue the conversation.");
-          if (input.trim()) {
-            localStorage.setItem('cyberpunk-last-prompt', input);
-          }
-          openSignIn();
-        } else {
-          toast.error("An error occurred. Please try again.");
+      // On vérifie simplement si le message d'erreur CONTIENT 'unauthorized' ou le code '401'
+      // C'est beaucoup plus robuste que de parser du JSON.
+      if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+        toast.info("Please sign in to continue the conversation.");
+        if (input.trim()) {
+          localStorage.setItem('cyberpunk-last-prompt', input);
         }
-      } catch {
-        if (errorMessage.includes('401') || errorMessage.toLowerCase().includes('unauthorized')) {
-          toast.info("Please sign in to continue the conversation.");
-          if (input.trim()) {
-            localStorage.setItem('cyberpunk-last-prompt', input);
-          }
-          openSignIn();
-        } else {
-          toast.error("An error occurred. Please try again.");
-        }
+        openSignIn();
+      } else {
+        // Pour toutes les autres erreurs
+        toast.error("An error occurred. Please try again.");
       }
     }
   }, [error, openSignIn, input]);
