@@ -32,6 +32,20 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
       chatId: chatId,
       model: model,
     },
+    onError: (error) => {
+      console.log('🚨 Erreur interceptée par onError:', error);
+      const errorMessage = error.message.toLowerCase();
+      
+      if (errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+        toast.info("Please sign in to continue the conversation.");
+        if (input.trim()) {
+          localStorage.setItem('cyberpunk-last-prompt', input);
+        }
+        openSignIn();
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+    },
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -321,6 +335,15 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
             onSubmit={(e) => {
               e.preventDefault();
               if (!input.trim()) return;
+              
+              // 🛡️ Vérification préventive : Si pas connecté, on sauvegarde et on demande la connexion
+              if (!isSignedIn) {
+                localStorage.setItem('cyberpunk-last-prompt', input);
+                toast.info("Please sign in to continue the conversation.");
+                openSignIn();
+                return;
+              }
+              
               handleSubmit(e, {
                 data: {
                   chatId: chatId,
@@ -354,6 +377,15 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     if (!input.trim()) return;
+                    
+                    // 🛡️ Vérification préventive ici aussi
+                    if (!isSignedIn) {
+                      localStorage.setItem('cyberpunk-last-prompt', input);
+                      toast.info("Please sign in to continue the conversation.");
+                      openSignIn();
+                      return;
+                    }
+                    
                     const form = e.currentTarget.closest('form');
                     if (form) {
                       form.requestSubmit();

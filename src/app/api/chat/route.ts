@@ -132,21 +132,23 @@ export async function POST(req: Request) {
               chatId = newChatId;
             }
 
-            // Save messages
-            await db.insert(_messages).values([
-              {
-                id: nanoid(),
-                chatId,
-                role: 'user',
-                content: userMessage.content,
-              },
-              {
-                id: nanoid(),
-                chatId,
-                role: 'assistant',
-                content: text,
-              },
-            ]);
+            // Save messages SÉPARÉMENT pour garantir l'ordre chronologique
+            // 1. D'abord le message utilisateur
+            await db.insert(_messages).values({
+              id: nanoid(),
+              chatId,
+              role: 'user',
+              content: userMessage.content,
+            });
+
+            // 2. Ensuite le message IA (avec un délai infime pour garantir l'ordre)
+            await new Promise(resolve => setTimeout(resolve, 1));
+            await db.insert(_messages).values({
+              id: nanoid(),
+              chatId,
+              role: 'assistant',
+              content: text,
+            });
 
             // Update usage counter (except for admin)
             if (userId !== adminUserId) {
