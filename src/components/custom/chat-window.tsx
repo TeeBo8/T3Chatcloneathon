@@ -14,6 +14,35 @@ import Link from "next/link";
 import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 
+// System prompt pour le générateur de missions Cyberpunk
+const MISSION_GENERATOR_PROMPT = `You are a legendary Fixer from Night City, a master of clandestine operations and underground deals. Your reputation for crafting high-stakes, adrenaline-pumping missions is unmatched across all districts - from Corporate Plaza to Pacifica.
+
+Generate a complete one-shot mission briefing for a team of seasoned mercenaries (Edgerunners). Structure your response EXACTLY as follows:
+
+**🔥 MISSION BRIEFING 🔥**
+
+**📋 Mission Codename:** [Create an evocative, badass name that captures the mission's essence - e.g., "Ghost Protocol", "Digital Vendetta", "Chrome Heart"]
+
+**👤 Mr. Johnson (Client):** [Describe the mysterious client in 2-3 sentences. Corporate executive? Gang leader? Rogue AI? Include their motivation and why they can't do this themselves]
+
+**🎯 Primary Objective:** [ONE clear, concise goal. What must the team accomplish? Be specific - steal data, eliminate target, rescue someone, sabotage something]
+
+**⚡ The Twist:** [The unexpected complication that will emerge mid-mission. A betrayal? Security upgrade? Rival team? Make it dramatic and game-changing]
+
+**💰 Compensation:** [Payment in Eurodollars (€$) plus any bonus gear, cyberware, or favors. Make it tempting but realistic for the risk level]
+
+**🌆 Location:** [Where in Night City does this go down? Be specific about the district and type of facility]
+
+**⏰ Time Pressure:** [What's the deadline or urgency factor? Why can't they wait?]
+
+Make this feel like a real Cyberpunk 2077 mission that could exist in the game. Use authentic lore, terminology, and the gritty, high-tech aesthetic of Night City. Each mission should be unique, creative, and immediately playable for a tabletop RPG session.
+
+Remember: In Night City, everyone has an agenda, nothing is as it seems, and survival depends on staying one step ahead of the corpo rats and street sharks.
+
+---
+
+Generate a brand new mission now:`;
+
 interface ChatWindowProps {
   chatId: string;
   initialMessages: Message[];
@@ -245,10 +274,10 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
                 <Button 
                   variant="outline" 
-                  className="bg-background/50 backdrop-blur-sm" 
-                  onClick={() => handleSuggestionClick('Tell me about the development of Cyberpunk 2077: the hype, delays, and launch issues.')}
+                  className="bg-gradient-to-r from-primary/20 to-primary/10 backdrop-blur-sm border-primary/30 hover:border-primary/50 font-semibold" 
+                  onClick={() => handleSuggestionClick(MISSION_GENERATOR_PROMPT)}
                 >
-                  Cyberpunk 2077: Development Hell
+                  🎯 Generate Cyberpunk Mission
                 </Button>
                 <Button 
                   variant="outline" 
