@@ -28,6 +28,24 @@ const SidebarContent = ({ userId }: { userId: string | null }) => {
           </SignInButton>
         </div>
       )}
+      
+      {/* -- LIEN STEAM EN FOOTER DE SIDEBAR -- */}
+      <div className="mt-auto pt-4 border-t border-white/10">
+        <Link 
+          href="https://store.steampowered.com/app/1091500/Cyberpunk_2077/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-gamepad-2">
+            <line x1="6" x2="6" y1="11" y2="17"/>
+            <line x1="10" x2="10" y1="13" y2="15"/>
+            <path d="M17.28 9.04a5 5 0 1 0-10.56 0"/>
+            <path d="M12 18H5.5a2 2 0 0 0-2 2v1h13v-1a2 2 0 0 0-2-2H12Z"/>
+          </svg>
+          Inspired by Cyberpunk 2077
+        </Link>
+      </div>
     </>
   );
 };
