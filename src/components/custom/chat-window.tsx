@@ -275,6 +275,19 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
               <p className="text-sm text-muted-foreground mt-8">
                 ...or ask anything else. The sky is the limit.
               </p>
+
+              {/* -- LE TEASER DE GÉNIE -- */}
+              <div className="mt-12 p-4 border border-dashed border-primary/50 rounded-lg max-w-md">
+                <h3 className="font-bold text-primary flex items-center justify-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-zap">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                  COMING SOON: The &ldquo;Johnny Silverhand&rdquo; Experience
+                </h3>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Get ready to chat with a true Night City legend. An exclusive, unfiltered AI persona available soon for &ldquo;Ultra-Cyber&rdquo; members.
+                </p>
+              </div>
             </div>
           )}
           

@@ -92,7 +92,7 @@ export const ChatMessage = React.memo(function ChatMessage({ message, reload, ch
 
   return (
     <div className={`group relative ${isUser ? 'flex justify-end' : 'flex justify-start'}`}>
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         {isUser ? (
           // Le message de l'utilisateur est dans une bulle à DROITE
           <div className="rounded-lg bg-primary p-3 text-primary-foreground ml-auto max-w-[80%]">
@@ -124,31 +124,31 @@ export const ChatMessage = React.memo(function ChatMessage({ message, reload, ch
           </div>
         ) : (
           // Le message de l'IA à GAUCHE, mode affichage normal avec bordure stylée
-          <div className="flex-1 overflow-hidden rounded-md transition-colors group-hover:bg-primary/5 p-3 min-w-0">
+          <div className="overflow-hidden rounded-md transition-colors group-hover:bg-primary/5 p-3">
             <div className="prose dark:prose-invert prose-p:my-0 max-w-full break-words">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
-              components={{
-                code({ className, children, ...props }: React.HTMLProps<HTMLElement>) {
-                  const match = /language-(\w+)/.exec(className || '');
-                  const codeString = String(children).replace(/\n$/, '');
-                  const inline = !className?.includes('language-');
-                  
-                  return !inline && match ? (
-                    <CodeBlock
-                      language={match[1]}
-                      value={codeString}
-                    />
-                  ) : (
-                    <code className="px-1.5 py-0.5 rounded-md font-mono text-sm bg-primary/20 text-primary" {...props}>
-                      {children}
-                    </code>
-                  );
-                },
-              }}
-            >
-              {content}
-            </ReactMarkdown>
+                components={{
+                  code({ className, children, ...props }: React.HTMLProps<HTMLElement>) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    const codeString = String(children).replace(/\n$/, '');
+                    const inline = !className?.includes('language-');
+                    
+                    return !inline && match ? (
+                      <CodeBlock
+                        language={match[1]}
+                        value={codeString}
+                      />
+                    ) : (
+                      <code className="px-1.5 py-0.5 rounded-md font-mono text-sm bg-primary/20 text-primary" {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                }}
+              >
+                {content}
+              </ReactMarkdown>
             </div>
           </div>
         )}
