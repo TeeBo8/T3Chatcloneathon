@@ -43,6 +43,8 @@ Remember: In Night City, everyone has an agenda, nothing is as it seems, and sur
 
 Generate a brand new mission now:`;
 
+
+
 interface ChatWindowProps {
   chatId: string;
   initialMessages: Message[];
@@ -288,10 +290,10 @@ export function ChatWindow({ chatId, initialMessages }: ChatWindowProps) {
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="bg-background/50 backdrop-blur-sm" 
-                  onClick={() => handleSuggestionClick('Explain the gameplay mechanics of Cyberpunk 2077: classes, skills, and weapons.')}
+                  className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border-purple-400/50 hover:border-purple-500/70 hover:from-purple-500/30 hover:to-pink-500/30 font-semibold text-purple-700 dark:text-purple-300" 
+                  onClick={() => setInput('Generate an NPC: [Describe your character idea, e.g., "a paranoid hacker living in the underground"]')}
                 >
-                  Gameplay & Mechanics
+                  🤖 Shape an Identity
                 </Button>
                 <Button 
                   variant="outline" 
